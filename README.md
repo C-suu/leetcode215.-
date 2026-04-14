@@ -34,8 +34,6 @@
 ### （3）带有注释的代码
 
 ```python
-import random
-
 class Solution:
     def findKthLargest(self, nums: List[int], k: int) -> int:
         # 定义内部递归函数，专门用于在给定数组 nums 中寻找第 k 大的数
@@ -58,10 +56,10 @@ class Solution:
                 return quick_select(big, k)
             # 判定阶段 2：如果总数减去小数桶的数量，都比 k 小
             # 等价于 len(big) + len(equal) < k，说明大数和相等数加起来都不够 k 个
-            if len(nums) - len(small) < k:
+            if len(big) + len(equal) < k:
                 # 目标绝对在小数桶里。
                 # 此时需要扣除已经被确认比目标大的那些数 (即大数桶和相等数桶的总数)
-                return quick_select(small, k - (len(nums) - len(small)))
+                return quick_select(small, k - (len(big) + len(equal)))
             # 判定阶段 3：目标既不在大数桶，也不在小数桶
             # 那目标必定落在相等数桶里，直接返回基准值即可
             return pivot
@@ -82,7 +80,7 @@ class Solution:
 7.  `if num > pivot:` 到 `else: equal.append(num)`：比较逻辑。将数字按大小关系分别装入三个不同的列表。
 8.  `if k <= len(big):`：核心分支一。如果 `big` 列表的长度大于等于 $k$，意味着全数组排名前 $k$ 大的数字全都在 `big` 里。
 9.  `return quick_select(big, k)`：直接将 `big` 列表作为新的搜索空间进行递归，目标名次依然是 $k$。
-10. `if len(nums) - len(small) < k:`：核心分支二。`len(nums) - len(small)` 在数学上刚好等于 `len(big) + len(equal)`。如果这个数量小于 $k$，说明哪怕把大于和等于基准值的数字全算上，名额也没凑满 $k$ 个。这证明第 $k$ 大的元素必定沦落到了 `small` 列表中。
+10. `if len(nums) - len(small) < k:`：核心分支二。`len(nums) - len(small)` 在数学上刚好等于 `len(big) + len(equal)`。如果这个数量小于 $k$，说明哪怕把大于和等于基准值的数字全算上，名额也没凑满 $k$ 个。这证明第 $k$ 大的元素必定沦落到了 `small` 列表中。【代码里面写为len(big) + len(equal)了，便于理解】
 11. `return quick_select(small, k - len(nums) + len(small))`：将 `small` 列表作为新搜索空间。重点在于更新名次要求：因为前面已经有 `len(nums) - len(small)` 个数字排在前面了，所以在剩余的 `small` 列表中，只需要寻找排在第 `k - 之前的数字个数` 位的元素。
 12. `return pivot`：如果上述两个 `if` 都没有命中，说明第 $k$ 个元素正好落在了 `equal` 列表所在的区间。因为 `equal` 列表里所有的数字都和 `pivot` 相等，所以无论具体是哪一个，返回 `pivot` 就是最终的正确答案。
 13. `return quick_select(nums, k)`：在主方法最后，调用并返回内部递归函数的最初执行结果。
